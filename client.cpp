@@ -69,6 +69,7 @@ int main (int argc, char *argv[]) {
 			cout << "For person " << p << ", at time " << t << ", the value of ecg " << e << " is " << reply << endl;
 		} 
 		else if (p != -1) { // only p specified
+			// make sure received dir exists 
 			ofstream ofs("received/x1.csv");
 			t = 0.0;
 			for (int i = 0; i < 1000; i++) {
@@ -101,10 +102,15 @@ int main (int argc, char *argv[]) {
 		string fname = filename;
 		
 		int len = sizeof(filemsg) + (fname.size() + 1);
-		char* buf2 = new char[len];
+		char* buf2 = new char[len]; // buffer request
 		memcpy(buf2, &fm, sizeof(filemsg));
 		strcpy(buf2 + sizeof(filemsg), fname.c_str());
 		chan.cwrite(buf2, len);  // I want the file length;
+		
+		//loops_needed = len / m_size + (len % m_size != 0);
+		//for (int i = 0; i < loops_needed; i++) {
+	
+		//}
 
 		int64_t file_size = 0;
 		chan.cread(&file_size, sizeof(__int64_t));
