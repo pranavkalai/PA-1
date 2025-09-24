@@ -112,7 +112,7 @@ int main (int argc, char *argv[]) {
 		// closing the channel    
 		MESSAGE_TYPE m = QUIT_MSG;
 		chan.cwrite(&m, sizeof(MESSAGE_TYPE));
-		wait(NULL);
+		//wait(NULL);
 
 		}
 
