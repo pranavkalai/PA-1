@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 	}
 	else { // parent
 		
-		sleep(1);
+		sleep(1); // wait for server to run in child process
 		FIFORequestChannel chan("control", FIFORequestChannel::CLIENT_SIDE);
 		char buf[MAX_MESSAGE]; // 256
 
@@ -86,11 +86,13 @@ int main (int argc, char *argv[]) {
 				double ecg2; // var to store ecg2 from server
 				chan.cread(&ecg2, sizeof(double)); // answer
 
-				ofs << p << "," << t << "," << ecg1 << "," << ecg2 << endl;
+				ofs << t << "," << ecg1 << "," << ecg2 << endl;
 
 				t += 0.004;
 			}
 			ofs.close();
+
+			cout << "First 1000 data points for person " << p << " written to x1.csv" << endl;
 		}
 		// WORK ON THIS LATER
 
