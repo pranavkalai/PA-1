@@ -102,27 +102,47 @@ int main (int argc, char *argv[]) {
 
 			cout << "First 1000 data points for person " << p << " written to x1.csv" << endl;
 		}
-		// WORK ON THIS LATER
+		else if (filename != "") {
+			// sending a non-sense message, you need to change this
+			filemsg fm(0, 0);
+			string fname = filename;
+			
+			int len = sizeof(filemsg) + (fname.size() + 1);
+			char* buf2 = new char[len]; // request buffer
+			memcpy(buf2, &fm, sizeof(filemsg));
+			strcpy(buf2 + sizeof(filemsg), fname.c_str());
+			chan.cwrite(buf2, len);  // I want the file length;
 
-		// sending a non-sense message, you need to change this
-		filemsg fm(0, 0);
-		string fname = filename;
-		
-		int len = sizeof(filemsg) + (fname.size() + 1);
-		char* buf2 = new char[len]; // buffer request
-		memcpy(buf2, &fm, sizeof(filemsg));
-		strcpy(buf2 + sizeof(filemsg), fname.c_str());
-		chan.cwrite(buf2, len);  // I want the file length;
-		
-		//loops_needed = len / m_size + (len % m_size != 0);
-		//for (int i = 0; i < loops_needed; i++) {
-	
-		//}
+			int64_t file_size = 0;
+			chan.cread(&file_size, sizeof(__int64_t)); // file size
+			
+			filemsg* file_req = (filemsg*)buf2;
+			file_req->offset = 0;
 
-		int64_t file_size = 0;
-		chan.cread(&file_size, sizeof(__int64_t));
+			char* buf3 = new char[m_size]; // reponse buffer to store file chunks
 
-		delete[] buf2;
+			while (file_size > 0) {
+				if (file_size < m_size) {
+					file_req->length = file_size; // last chunk
+				}
+				else {
+					file_req->length = m_size; // user defined message size
+				}
+				chan.cwrite(buf2, len); // request file chunk
+				chan.cread(buf3, file_req->length); // read file chunk
+
+				file_size -= m_size; // decrement remaining file size
+				file_req->offset += m_size; // increment offset
+			}
+			
+			ofstream ofs(filename);
+			ofs << buf3 << endl;
+			ofs.close();
+			
+			delete[] buf2;
+			delete[] buf3;
+		}
+
 		
 		// closing the channel    
 		MESSAGE_TYPE m = QUIT_MSG;
