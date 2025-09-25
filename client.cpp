@@ -120,6 +120,7 @@ int main (int argc, char *argv[]) {
 			file_req->offset = 0;
 
 			char* buf3 = new char[m_size]; // reponse buffer to store file chunks
+			mkdir("received", 0777); // make sure received dir exists 
 			ofstream ofs("received/" + filename, ios::binary);
 
 			while (file_size > 0) {
