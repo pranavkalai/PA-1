@@ -120,6 +120,7 @@ int main (int argc, char *argv[]) {
 			file_req->offset = 0;
 
 			char* buf3 = new char[m_size]; // reponse buffer to store file chunks
+			ofstream ofs("recieved/" + filename);
 
 			while (file_size > 0) {
 				if (file_size < m_size) {
@@ -131,16 +132,19 @@ int main (int argc, char *argv[]) {
 				chan.cwrite(buf2, len); // request file chunk
 				chan.cread(buf3, file_req->length); // read file chunk
 
-				file_size -= m_size; // decrement remaining file size
-				file_req->offset += m_size; // increment offset
+				ofs << buf3 << endl; // write to file
+
+				file_size -= file_req->length; // decrement remaining file size
+				file_req->offset += file_req->length; // increment offset
+
 			}
 			
-			ofstream ofs(filename);
-			ofs << buf3 << endl;
 			ofs.close();
 			
 			delete[] buf2;
 			delete[] buf3;
+
+			cout << "Request for " << filename << " complete" << endl;
 		}
 
 		
