@@ -22,6 +22,7 @@ int main (int argc, char *argv[]) {
 	int p = -1;
 	double t = -1.0;
 	int e = -1;
+	int m_size = MAX_MESSAGE;
 
 	string filename = "";
 	while ((opt = getopt(argc, argv, "p:t:e:f:")) != -1) {
@@ -38,10 +39,16 @@ int main (int argc, char *argv[]) {
 			case 'f':
 				filename = optarg;
 				break;
+			case 'm':
+				m_size = atoi (optarg);
+				break;
 		}
 	}
 
-	char* args[] = {(char*)"./server", NULL};
+	char m_str[16];
+	sprintf(m_str, "%d", m_size);
+
+	char* args[] = {(char*)"./server", (char*)"-m", m_str, NULL};
 	
 	pid_t pid = fork();
 	if (pid < 0) {
