@@ -63,6 +63,8 @@ int main (int argc, char *argv[]) {
 	else if (pid == 0) { // child
 		// run server
 		execvp(args[0], args);
+		perror("Server Failed");
+		return 1;
 	}
 	else { // parent
 		
@@ -75,13 +77,13 @@ int main (int argc, char *argv[]) {
 			cont_chan.cwrite(&nc, sizeof(MESSAGE_TYPE));
 			char name[MAX_MESSAGE];
 			cont_chan.cread(&name, sizeof(name));
-			string name_str(name);
+			string name_str(name); // convert to string
 			FIFORequestChannel* new_chan = new FIFORequestChannel(name_str, FIFORequestChannel::CLIENT_SIDE);
 			channels.push_back(new_chan);
 			cout << "New channel created: " << name << endl;
 		}
 
-		FIFORequestChannel chan = *(channels.back());
+		FIFORequestChannel chan = *(channels.back()); // current channel
 
 		char buf[MAX_MESSAGE]; // 256
 
@@ -166,6 +168,10 @@ int main (int argc, char *argv[]) {
 			delete[] buf3;
 
 			cout << "Request for " << filename << " complete" << endl;
+		}
+		else {
+			cerr << "Insufficient arguments" << endl;
+			return 1;
 		}
 
 		MESSAGE_TYPE m = QUIT_MSG;
