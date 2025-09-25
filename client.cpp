@@ -23,9 +23,11 @@ int main (int argc, char *argv[]) {
 	double t = -1.0;
 	int e = -1;
 	int m_size = MAX_MESSAGE;
+	bool c = false;
+	vector<FIFORequestChannel*> channels;
 
 	string filename = "";
-	while ((opt = getopt(argc, argv, "p:t:e:f:")) != -1) {
+	while ((opt = getopt(argc, argv, "p:t:e:f:m:c")) != -1) {
 		switch (opt) {
 			case 'p':
 				p = atoi (optarg);
@@ -41,6 +43,9 @@ int main (int argc, char *argv[]) {
 				break;
 			case 'm':
 				m_size = atoi (optarg);
+				break;
+			case 'c':
+				c = true;
 				break;
 		}
 	}
@@ -62,7 +67,21 @@ int main (int argc, char *argv[]) {
 	else { // parent
 		
 		sleep(1); // wait for server to run in child process
-		FIFORequestChannel chan("control", FIFORequestChannel::CLIENT_SIDE);
+		FIFORequestChannel cont_chan("control", FIFORequestChannel::CLIENT_SIDE);
+		channels.push_back(&cont_chan);
+
+		if (c) {
+			MESSAGE_TYPE nc = NEWCHANNEL_MSG;
+			cont_chan.cwrite(&nc, sizeof(MESSAGE_TYPE));
+			string name;
+			cont_chan.cread(&name, sizeof(string));
+			FIFORequestChannel* new_chan = new FIFORequestChannel(name, FIFORequestChannel::CLIENT_SIDE);
+			channels.push_back(new_chan);
+			cout << "New channel created: " << name << endl;
+		}
+
+		FIFORequestChannel chan = *(channels.back());
+
 		char buf[MAX_MESSAGE]; // 256
 
 		if (p != -1 && t != -1 && e != -1) { // p, t, e all specified
@@ -148,13 +167,20 @@ int main (int argc, char *argv[]) {
 			cout << "Request for " << filename << " complete" << endl;
 		}
 
-		
-		// closing the channel    
 		MESSAGE_TYPE m = QUIT_MSG;
-		chan.cwrite(&m, sizeof(MESSAGE_TYPE));
-		//wait(NULL);
 
+		if (c) {
+			chan.cwrite(&m, sizeof(MESSAGE_TYPE));
+			delete channels.back(); // delete the current channel
+			channels.pop_back(); // remove it from vector
+			chan = *(channels.back()); // switch to control channel
 		}
+
+		// closing the control channel    
+		chan.cwrite(&m, sizeof(MESSAGE_TYPE));
+		wait(NULL);
+
+	}
 
     
 
