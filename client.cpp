@@ -76,7 +76,7 @@ int main (int argc, char *argv[]) {
 			cout << "For person " << p << ", at time " << t << ", the value of ecg " << e << " is " << reply << endl;
 		} 
 		else if (p != -1) { // only p specified
-			// make sure received dir exists 
+			mkdir("received", 0777); // make sure received dir exists 
 			ofstream ofs("received/x1.csv");
 			t = 0.0;
 			for (int i = 0; i < 1000; i++) {
@@ -120,7 +120,7 @@ int main (int argc, char *argv[]) {
 			file_req->offset = 0;
 
 			char* buf3 = new char[m_size]; // reponse buffer to store file chunks
-			ofstream ofs("recieved/" + filename);
+			ofstream ofs("received/" + filename, ios::binary);
 
 			while (file_size > 0) {
 				if (file_size < m_size) {
@@ -132,7 +132,7 @@ int main (int argc, char *argv[]) {
 				chan.cwrite(buf2, len); // request file chunk
 				chan.cread(buf3, file_req->length); // read file chunk
 
-				ofs << buf3 << endl; // write to file
+				ofs.write(buf3, file_req->length); // write to file
 
 				file_size -= file_req->length; // decrement remaining file size
 				file_req->offset += file_req->length; // increment offset
