@@ -169,10 +169,6 @@ int main (int argc, char *argv[]) {
 
 			cout << "Request for " << filename << " complete" << endl;
 		}
-		else {
-			cerr << "Insufficient arguments" << endl;
-			return 1;
-		}
 
 		MESSAGE_TYPE m = QUIT_MSG;
 
