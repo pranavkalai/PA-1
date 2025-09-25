@@ -73,9 +73,10 @@ int main (int argc, char *argv[]) {
 		if (c) {
 			MESSAGE_TYPE nc = NEWCHANNEL_MSG;
 			cont_chan.cwrite(&nc, sizeof(MESSAGE_TYPE));
-			string name;
-			cont_chan.cread(&name, sizeof(string));
-			FIFORequestChannel* new_chan = new FIFORequestChannel(name, FIFORequestChannel::CLIENT_SIDE);
+			char name[MAX_MESSAGE];
+			cont_chan.cread(&name, sizeof(name));
+			string name_str(name);
+			FIFORequestChannel* new_chan = new FIFORequestChannel(name_str, FIFORequestChannel::CLIENT_SIDE);
 			channels.push_back(new_chan);
 			cout << "New channel created: " << name << endl;
 		}
