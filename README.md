@@ -2,3 +2,5 @@ On the graph, the first two data points (256 B and 1 KB) have a steeper slope th
 For larger files, this bottleneck isn't as significant, so the slope flattens out. Increasing the buffer size would reduce this bottleneck and make the small-file transfers faster. The plot is below:
 
 ![File Transfer Times](transfer_times.png)
+
+Link to GitHub Repo: 
