@@ -3,4 +3,6 @@ For larger files, this bottleneck isn't as significant, so the slope flattens ou
 
 ![File Transfer Times](execution_times_plot.png)
 
+I have also provided this paragraph and plot in a pdf called "answer.pdf", which is in the repo.
+
 Link to GitHub Repo: https://github.com/pranavkalai/PA-1
